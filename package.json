@@ -1,0 +1,29 @@
+{
+  "name": "reordinal-docs",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Documentation site for Reordinal — docs.reordinal.com",
+  "scripts": {
+    "dev": "next dev -p 3600",
+    "build": "next build",
+    "postbuild": "pagefind --site out --output-path out/_pagefind && node scripts/generate-sitemap.mjs",
+    "start": "next start -p 3600",
+    "deploy": "npm run build && gh-pages -d out --dotfiles -m \"Deploy docs\""
+  },
+  "dependencies": {
+    "next": "^15.1.6",
+    "nextra": "^4.2.13",
+    "nextra-theme-docs": "^4.2.13",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.17.6",
+    "@types/react": "19.2.17",
+    "gh-pages": "^6.3.0",
+    "pagefind": "^1.3.0"
+  },
+  "overrides": {
+    "zod": "4.1.12"
+  }
+}

@@ -1,0 +1,98 @@
+---
+title: Actions
+description: Move a candidate to another hiring stage, add or remove tags, and rerun ATS scoring.
+---
+
+import { Callout } from 'nextra/components'
+
+# Actions
+
+The three writes on the v1 surface. All of them require the candidate's job to
+be inside the key's workspace and claims (`404 V1_RESOURCE_NOT_FOUND`
+otherwise).
+
+## Move a candidate to another stage
+
+```
+PATCH /api/v1/applications/:applicationId/stage
+```
+
+```bash
+curl -X PATCH https://api.reordinal.com/api/v1/applications/app_123/stage \
+  -H "X-API-Key: $REORDINAL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "stage": "stage_interview" }'
+```
+
+- **`stage`** (alias **`stageId`**): required — the target stage's public ID,
+  from the job's `stages` (see [Get a job](/api/jobs#get-a-job)).
+
+Returns the updated stage info under `data`.
+
+| Status | Code | When |
+| --- | --- | --- |
+| 400 | `V1_INVALID_REQUEST` | `stage` missing or empty |
+| 404 | `V1_RESOURCE_NOT_FOUND` | Out of scope / not found |
+
+## Tag a candidate
+
+```
+PATCH /api/v1/applications/:applicationId/tags
+```
+
+Two body forms:
+
+**Add/remove (merge)** — the convenient form; merges against current tags:
+
+```json
+{ "add": ["strong-system-design"], "remove": ["maybe"], "color": "#6366f1" }
+```
+
+- `add`: tag names to add — newly created tags get `color` (or a default).
+- `remove`: tag names to remove, case-insensitive.
+
+**Replace** — sets the full tag list; each tag needs a name and hex color:
+
+```json
+{
+  "tags": [{ "name": "strong-system-design", "color": "#6366f1" }],
+  "addToJobTags": [{ "name": "strong-system-design", "color": "#6366f1" }]
+}
+```
+
+- `addToJobTags`: optional — also register these tags at the job level.
+
+Returns `{ "application": { "id", "jobId", "tags": [...] } }`.
+
+| Status | Code | When |
+| --- | --- | --- |
+| 400 | `V1_INVALID_REQUEST` | Neither `tags` nor `add`/`remove` given; missing name; invalid hex color |
+| 404 | `V1_RESOURCE_NOT_FOUND` | Out of scope / not found |
+
+## Rerun ATS scoring
+
+```
+POST /api/v1/applications/:applicationId/ats/rerun
+```
+
+Re-scores the candidate against the job's current description and criteria —
+use it after the job changed.
+
+<Callout type="warning">
+  Costs **one credit**, charged to the workspace. Requires the resume to be
+  parsed and the job to have a description. With no credits available the rerun
+  is skipped and nothing is charged.
+</Callout>
+
+```json
+{ "status": "success", "data": { "message": "ATS re-run triggered" } }
+```
+
+| Status | Code | When |
+| --- | --- | --- |
+| 400 | `V1_INVALID_REQUEST` | Resume not parsed yet, job has no description, or a pipeline is already running |
+| 404 | `V1_RESOURCE_NOT_FOUND` | Out of scope / not found |
+
+Scoring is asynchronous — poll
+[`GET /api/v1/applications/:id/ats`](/api/candidates#ats-breakdown) for the new
+result.

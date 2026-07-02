@@ -1,0 +1,96 @@
+---
+title: Candidates
+description: List, filter, and sort a job's candidates; read one candidate's details, parsed resume, and ATS breakdown.
+---
+
+import { Callout } from 'nextra/components'
+
+# Candidates
+
+A candidate (application) belongs to a job. All four reads here require the
+job to be inside the key's workspace and claims — anything else is a
+`404 V1_RESOURCE_NOT_FOUND`.
+
+## List candidates
+
+```
+GET /api/v1/jobs/:jobId/applications
+```
+
+| Query param | Type | Notes |
+| --- | --- | --- |
+| `sort` | string | `ats-desc`, `ats-asc`, `date-desc`, `date-asc`, `name-asc`, `name-desc`, `stage-asc`, `stage-desc` |
+| `status` | string | One or more application statuses, comma-separated |
+| `stageIds` | string | Stage public IDs, comma-separated |
+| `atsScoreMin` / `atsScoreMax` | number | Score bounds, 0–100 |
+| `search` | string | Free-text candidate name/email search |
+| `offset` / `limit` | number | Pagination — default `0` / `20`, max `100` |
+
+```bash
+curl "https://api.reordinal.com/api/v1/jobs/job_xyz/applications?sort=ats-desc&stageIds=stage_screening&atsScoreMin=75" \
+  -H "X-API-Key: $REORDINAL_API_KEY"
+```
+
+```json
+{
+  "status": "success",
+  "data": {
+    "applications": [
+      { "id": "app_123", "candidateName": "Jane Doe", "atsScore": 87, "jobStageId": "stage_screening", "tags": [] }
+    ],
+    "pagination": { "total": 128, "offset": 0, "limit": 20 },
+    "processingCount": 3,
+    "pausedCount": 0
+  }
+}
+```
+
+`processingCount` is how many applications are still in the parse/score
+pipeline and not yet listed with final data.
+
+## Get a candidate
+
+```
+GET /api/v1/applications/:applicationId
+```
+
+Returns the full candidate under `data.application` — contact fields (both
+user-provided and resume-extracted), tags, current stage, ATS and reviewer
+scores, form/screening answers, and pipeline status.
+
+## Parsed resume
+
+```
+GET /api/v1/applications/:applicationId/resume
+```
+
+```json
+{ "status": "success", "data": { "resume": { "skills": [], "experience": [], "education": [] } } }
+```
+
+Returns `{ "resume": null }` while parsing hasn't completed yet.
+
+## ATS breakdown
+
+```
+GET /api/v1/applications/:applicationId/ats
+```
+
+```json
+{ "status": "success", "data": { "ats": { "score": 87, "matched": [], "missing": [], "strengths": [], "concerns": [] } } }
+```
+
+Returns `{ "ats": null }` while scoring hasn't run. Read the job's `criteria`
+(via [Get a job](/api/jobs#get-a-job)) alongside this to interpret the
+per-criterion detail.
+
+<Callout type="info">
+  Stale score after the job changed? Trigger a re-score — see
+  [Actions](/api/actions#rerun-ats-scoring).
+</Callout>
+
+## Errors
+
+| Status | Code | When |
+| --- | --- | --- |
+| 404 | `V1_RESOURCE_NOT_FOUND` | Application (or its job) doesn't exist or is outside the key's scope |

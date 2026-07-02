@@ -1,0 +1,80 @@
+---
+title: Claude Code Plugin
+description: Install the reordinal plugin and drive your ATS from Claude Code in plain English — review candidates, move stages, tag, and rerun scoring.
+---
+
+import { Callout } from 'nextra/components'
+
+# Claude Code Plugin
+
+The `reordinal` plugin lets [Claude Code](https://claude.com/claude-code)
+browse and act on your ATS in plain English — no curl, no dashboard
+tab-switching.
+
+- **Browse jobs** — openings, hiring stages, ATS criteria.
+- **Review candidates** — filter and sort by score, stage, status, or name;
+  open details, parsed resumes, and ATS breakdowns.
+- **Act** — move stages, add/remove tags, rerun ATS scoring.
+- **Reason** — ask for a shortlist, a head-to-head comparison, or interview
+  questions; Claude combines the reads with the job's criteria to answer.
+
+## Install
+
+```
+/plugin marketplace add reordinal/claude-reordinal
+/plugin install reordinal@reordinal
+```
+
+## Setup
+
+You need an API key (`rd_live_…`) from your workspace settings → **API Keys** —
+owners/admins only; the key can be
+[scoped to specific teams or jobs](/concepts/api-keys-and-scoping).
+
+Export it **before** launching Claude — a running session won't pick up a later
+`export`:
+
+```bash
+export REORDINAL_API_KEY=rd_live_...
+claude
+```
+
+Add it to your shell profile to keep it around.
+
+## Use it
+
+Just ask:
+
+- *"Show me my open jobs."*
+- *"For the Senior Backend Engineer role, list candidates in screening with an
+  ATS score above 75, best first."*
+- *"Open the top candidate's resume and ATS breakdown and summarize their
+  strengths against the must-haves."*
+- *"Draft interview questions for this candidate."*
+- *"Move Jane Doe to the interview stage and tag her 'strong-system-design'."*
+- *"Rerun ATS scoring on this candidate."*
+
+<Callout type="info">
+  Reads are free. Rerunning ATS scoring costs **one credit** — Claude will ask
+  before spending it.
+</Callout>
+
+## Skills
+
+Claude picks the right skill from your request — you don't invoke them by hand:
+
+| Skill | What it does |
+| --- | --- |
+| `reordinal:jobs` | Browse jobs; read a job's stages + ATS criteria |
+| `reordinal:candidates` | Filter/inspect candidates; move stages, tag, rerun scoring |
+
+## How it works
+
+```
+Claude Code → reordinal plugin → https://api.reordinal.com/api/v1 (X-API-Key)
+```
+
+The plugin is a thin CLI over the same [REST API](/api/overview) documented
+here — the workspace and the key's team/job scope are resolved server-side from
+the key, and out-of-scope resources are invisible (`404`), exactly as with
+direct API calls.

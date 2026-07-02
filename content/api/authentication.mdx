@@ -1,0 +1,96 @@
+---
+title: Authentication
+description: Create, list, and revoke Reordinal API keys, and scope them with team/job claims.
+---
+
+import { Callout } from 'nextra/components'
+
+# Authentication
+
+`/api/v1` requests authenticate with an API key in the `X-API-Key` header. This
+page covers managing the keys themselves.
+
+The easiest way is the dashboard: workspace settings → **API Keys**. The same
+operations exist as JWT-authenticated endpoints under
+`/api/orgs/:orgId/api-keys` — all restricted to workspace **owners and
+admins**.
+
+## Create a key
+
+```
+POST /api/orgs/:orgId/api-keys
+```
+
+```json
+{
+  "name": "Claude plugin – recruiting team",
+  "claims": { "teams": ["team_abc"], "jobs": ["job_xyz"] },
+  "expiresAt": "2027-01-01T00:00:00Z"
+}
+```
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `name` | string | yes | Display name, non-empty |
+| `claims` | object | no | `teams` / `jobs`: arrays of public IDs. Empty/omitted = whole workspace |
+| `expiresAt` | ISO-8601 string | no | Must be in the future |
+
+Response (`201`):
+
+```json
+{
+  "status": "success",
+  "data": {
+    "apiKey": "rd_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "key": {
+      "id": "key_abc123",
+      "name": "Claude plugin – recruiting team",
+      "keyPrefix": "rd_live_xxxxxxxx",
+      "maskedKey": "rd_live_xxxxxxxx••••••••",
+      "claims": { "teams": ["team_abc"], "jobs": ["job_xyz"] },
+      "lastUsedAt": null,
+      "expiresAt": "2027-01-01T00:00:00.000Z",
+      "isActive": true,
+      "createdAt": "2026-06-21T10:30:00.000Z"
+    }
+  }
+}
+```
+
+<Callout type="warning">
+  `apiKey` is the plaintext and is returned **only here**. Only its SHA-256
+  hash is stored — it cannot be retrieved again. Store it securely.
+</Callout>
+
+## List keys
+
+```
+GET /api/orgs/:orgId/api-keys
+```
+
+Returns the workspace's keys, newest first, always masked — `data.keys` is an
+array of the `key` shape above (plus `lastUsedAt` once used). Revoked keys are
+excluded.
+
+## Revoke a key
+
+```
+DELETE /api/orgs/:orgId/api-keys/:keyId
+```
+
+Returns `{ "revoked": true }`. Takes effect immediately: the next `/api/v1`
+request with that key gets `401 API_KEY_INVALID`.
+
+## Using a key
+
+```bash
+curl https://api.reordinal.com/api/v1/jobs \
+  -H "X-API-Key: $REORDINAL_API_KEY"
+```
+
+- Missing header → `401 API_KEY_MISSING`
+- Unknown/revoked key → `401 API_KEY_INVALID`
+- Past its `expiresAt` → `401 API_KEY_EXPIRED`
+
+How claims narrow a key — and why out-of-scope reads are `404`s — is covered in
+[API keys & scoping](/concepts/api-keys-and-scoping).

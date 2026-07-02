@@ -1,0 +1,47 @@
+---
+title: Introduction
+description: Reordinal is an ATS you can drive programmatically — browse jobs and act on candidates via a REST API, or let Claude do it from your terminal.
+---
+
+# Reordinal
+
+**Reordinal is an applicant tracking system built for speed — and it doesn't
+stop at the dashboard.**
+
+Post jobs, collect applications, and let ATS scoring rank every resume against
+the role's criteria. Then work the pipeline however suits you: in the web app,
+from your own scripts via the REST API, or in plain English through Claude Code.
+
+## The model in one minute
+
+1. A **workspace** (organization) holds **teams**, and teams hold **jobs**.
+2. A job has an ordered set of **hiring stages** (screening, interview, offer, …)
+   and **ATS criteria** — the must-haves and nice-to-haves applicants are scored
+   against.
+3. Every submitted application becomes a **candidate** on the job: parsed
+   resume, contact fields, an **ATS score** with a full breakdown, tags, and a
+   current stage.
+
+See the [data model](/concepts/data-model) for the full picture.
+
+## Two ways to integrate
+
+- **REST API** — the `/api/v1` surface, authenticated with a workspace
+  **API key**. List jobs, filter and sort candidates, read resumes and ATS
+  breakdowns, move stages, tag, and rerun scoring. See the
+  [API Reference](/api/overview).
+- **Claude Code** — install the `reordinal` plugin and ask in plain English:
+  *"list candidates in screening with an ATS score above 75, best first."* See
+  [Claude Code Plugin](/plugin/claude-code).
+
+Both talk to the same backend with the same key, and both respect the key's
+[team/job scope](/concepts/api-keys-and-scoping).
+
+## Where to start
+
+- New here? Make your first API call in a few minutes with the
+  [Quickstart](/quickstart).
+- Building an integration? Read [Concepts](/concepts/data-model), then jump to
+  the [API Reference](/api/overview).
+- Working from a terminal? Install the
+  [Claude Code plugin](/plugin/claude-code).

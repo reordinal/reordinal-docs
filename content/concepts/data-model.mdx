@@ -1,0 +1,60 @@
+---
+title: Data model
+description: How Reordinal organizes recruiting — workspaces, teams, jobs with stages and ATS criteria, and candidates.
+---
+
+# Data model
+
+Four levels, top to bottom:
+
+```
+Workspace (organization)
+└── Team
+    └── Job  — hiring stages + ATS criteria
+        └── Candidate (application)
+```
+
+## Workspace
+
+The workspace (organization) is the account boundary: members and roles,
+billing and credits, and [API keys](/concepts/api-keys-and-scoping) all live
+here. An API key authenticates as the workspace and can see nothing outside it.
+
+## Team
+
+Teams group jobs — Engineering, Sales, a region, however you slice it. Their
+main role in the API is **scoping**: a key can be restricted to specific teams,
+which covers every job in them, present and future.
+
+## Job
+
+A job is an opening. The parts the API exposes:
+
+- **Stages** — the ordered hiring pipeline (e.g. Applied → Screening →
+  Interview → Offer). Each stage has a public ID; moving a candidate means
+  patching their stage to one of these IDs. Read them via
+  [`GET /api/v1/jobs/:jobId`](/api/jobs).
+- **ATS criteria** — the must-haves, nice-to-haves, and weighting used to score
+  every applicant's resume. See [ATS scoring](/concepts/ats-scoring).
+- **Status** — e.g. `active`, `draft`, `closed`; filterable when
+  [listing jobs](/api/jobs).
+
+## Candidate (application)
+
+Every submission becomes an application on the job — "candidate" and
+"application" are the same object. It carries:
+
+- **Contact fields** — both user-provided (from the application form) and
+  operator-extracted (parsed from the resume as fallback).
+- **Parsed resume** — skills, experience, education, projects, summary.
+- **ATS score + breakdown** — matched/missing criteria, strengths, concerns.
+- **Stage, tags, status** — the working state your pipeline moves through.
+
+Reads and actions on candidates are covered in
+[Candidates](/api/candidates) and [Actions](/api/actions).
+
+## Public IDs
+
+Every object is addressed by a stable public ID with a type prefix —
+`team_…`, `job_…`, `app_…`, `stage_…`, `key_…`. These are the only identifiers
+the API accepts and returns.

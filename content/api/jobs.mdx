@@ -1,0 +1,81 @@
+---
+title: Jobs
+description: List the jobs in your workspace and read a job's details, hiring stages, and ATS criteria.
+---
+
+import { Callout } from 'nextra/components'
+
+# Jobs
+
+Jobs are the entry point: list them to find the opening you want, then read one
+job for its **stages** (needed to move candidates) and **ATS criteria** (what
+candidates are scored against).
+
+## List jobs
+
+```
+GET /api/v1/jobs
+```
+
+| Query param | Type | Notes |
+| --- | --- | --- |
+| `status` | string | Optional filter, e.g. `active`, `draft`, `closed` |
+| `offset` | number | Default `0` |
+| `limit` | number | Default `20`, max `100` |
+
+```bash
+curl "https://api.reordinal.com/api/v1/jobs?status=active" \
+  -H "X-API-Key: $REORDINAL_API_KEY"
+```
+
+```json
+{
+  "status": "success",
+  "data": {
+    "items": [
+      {
+        "id": "job_xyz",
+        "title": "Senior Backend Engineer",
+        "status": "active",
+        "teamId": "team_abc",
+        "teamName": "Engineering",
+        "applicationCount": 128,
+        "createdAt": "2026-05-01T10:00:00.000Z"
+      }
+    ],
+    "pagination": { "offset": 0, "limit": 20, "total": 1 }
+  }
+}
+```
+
+Scoped keys only see jobs inside their claims.
+
+<Callout type="info">
+  For team/job-scoped keys, claim filtering is applied to the first 100 org
+  jobs before pagination — fine for keys scoped to a handful of teams/jobs.
+</Callout>
+
+## Get a job
+
+```
+GET /api/v1/jobs/:jobId
+```
+
+Returns the full job object directly under `data` — title, status, description,
+form fields, **`stages`** (each with a `stage_…` public ID), and **`criteria`**
+(the ATS must-haves/nice-to-haves and weighting).
+
+```bash
+curl https://api.reordinal.com/api/v1/jobs/job_xyz \
+  -H "X-API-Key: $REORDINAL_API_KEY"
+```
+
+Use the stage IDs from here when
+[moving a candidate](/api/actions#move-a-candidate-to-another-stage), and the
+criteria to interpret [ATS breakdowns](/api/candidates#ats-breakdown).
+
+## Errors
+
+| Status | Code | When |
+| --- | --- | --- |
+| 404 | `V1_RESOURCE_NOT_FOUND` | Job doesn't exist, or is outside the key's workspace/claims |

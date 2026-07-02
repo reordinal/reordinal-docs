@@ -1,0 +1,81 @@
+---
+title: API Overview
+description: Base URL, authentication, response envelope, rate limits, and the endpoint map for the Reordinal REST API.
+---
+
+import { Callout } from 'nextra/components'
+
+# API Overview
+
+The Reordinal API is a REST API over JSON.
+
+```
+Base URL: https://api.reordinal.com
+```
+
+The public surface lives under **`/api/v1`** and authenticates with a workspace
+API key in the `X-API-Key` header:
+
+```bash
+curl https://api.reordinal.com/api/v1/jobs \
+  -H "X-API-Key: $REORDINAL_API_KEY"
+```
+
+Keys are minted by workspace owners/admins — see
+[Authentication](/api/authentication) and
+[API keys & scoping](/concepts/api-keys-and-scoping).
+
+## Response envelope
+
+Every response — success or failure — uses the same envelope:
+
+```json
+{ "status": "success", "data": { /* result */ } }
+```
+
+```json
+{ "status": "fail", "error": { "code": "V1_RESOURCE_NOT_FOUND", "message": "Resource not found" } }
+```
+
+Branch on `status`; `error.code` is stable and machine-matchable — the full
+table is in [Errors](/api/errors).
+
+## Scoping
+
+A key sees only its workspace, optionally narrowed to claimed teams/jobs.
+Anything outside that scope returns `404 V1_RESOURCE_NOT_FOUND` — never `403` —
+so keys can't probe for resources they can't reach.
+
+## Rate limits
+
+**120 requests per minute per key** (default). Exceeding it returns
+`429 V1_RATE_LIMITED` with a `Retry-After` header giving the seconds to wait.
+
+<Callout type="info">
+  Reads are free. The only metered call is
+  [`POST /api/v1/applications/:id/ats/rerun`](/api/actions) — one credit per
+  rerun.
+</Callout>
+
+## Endpoints
+
+| Method | Path | Doc |
+| --- | --- | --- |
+| GET | `/api/v1/jobs` | [Jobs](/api/jobs) |
+| GET | `/api/v1/jobs/:jobId` | [Jobs](/api/jobs) |
+| GET | `/api/v1/jobs/:jobId/applications` | [Candidates](/api/candidates) |
+| GET | `/api/v1/applications/:applicationId` | [Candidates](/api/candidates) |
+| GET | `/api/v1/applications/:applicationId/resume` | [Candidates](/api/candidates) |
+| GET | `/api/v1/applications/:applicationId/ats` | [Candidates](/api/candidates) |
+| PATCH | `/api/v1/applications/:applicationId/stage` | [Actions](/api/actions) |
+| PATCH | `/api/v1/applications/:applicationId/tags` | [Actions](/api/actions) |
+| POST | `/api/v1/applications/:applicationId/ats/rerun` | [Actions](/api/actions) |
+
+Key management (`/api/orgs/:orgId/api-keys`) is JWT-authenticated and covered
+in [Authentication](/api/authentication).
+
+## Surface scope
+
+v1 is deliberately read-heavy with exactly three writes: stage moves, tags, and
+ATS reruns. Destructive and lifecycle operations (archiving candidates, editing
+contact details, reviewer scores, pipeline control) are dashboard-only.

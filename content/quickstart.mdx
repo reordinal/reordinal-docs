@@ -1,0 +1,138 @@
+---
+title: Quickstart
+description: Go from an API key to your first candidate list in a few minutes using the Reordinal REST API.
+---
+
+import { Callout } from 'nextra/components'
+
+# Quickstart
+
+This guide takes you from nothing to a ranked candidate list using the REST
+API. It takes about five minutes.
+
+The base URL for all API requests is:
+
+```
+https://api.reordinal.com
+```
+
+Every endpoint lives under `/api/v1` and is authenticated with a workspace
+**API key** sent in the `X-API-Key` header.
+
+## 1. Get an API key
+
+1. Sign in at [reordinal.com](https://reordinal.com).
+2. Open your workspace's settings and go to **API Keys**.
+3. Create a key. It looks like `rd_live_…` and is shown **only once** — copy it
+   somewhere safe.
+
+Only workspace owners and admins can create keys. A key can cover the whole
+workspace or be scoped to specific teams/jobs — see
+[Authentication](/api/authentication).
+
+```bash
+export REORDINAL_API_KEY=rd_live_...
+```
+
+## 2. List your jobs
+
+```bash
+curl https://api.reordinal.com/api/v1/jobs \
+  -H "X-API-Key: $REORDINAL_API_KEY"
+```
+
+Every response uses the same envelope — `status` is `success` with `data`, or
+`fail` with `error`:
+
+```json
+{
+  "status": "success",
+  "data": {
+    "items": [
+      {
+        "id": "job_xyz",
+        "title": "Senior Backend Engineer",
+        "status": "active",
+        "teamId": "team_abc",
+        "teamName": "Engineering",
+        "applicationCount": 128,
+        "createdAt": "2026-05-01T10:00:00.000Z"
+      }
+    ],
+    "pagination": { "offset": 0, "limit": 20, "total": 1 }
+  }
+}
+```
+
+Grab a job's `id` — everything else hangs off it.
+
+## 3. List candidates, best first
+
+```bash
+curl "https://api.reordinal.com/api/v1/jobs/job_xyz/applications?sort=ats-desc&atsScoreMin=75" \
+  -H "X-API-Key: $REORDINAL_API_KEY"
+```
+
+```json
+{
+  "status": "success",
+  "data": {
+    "applications": [
+      { "id": "app_123", "candidateName": "Jane Doe", "atsScore": 87, "jobStageId": "stage_screening", "tags": [] }
+    ],
+    "pagination": { "total": 42, "offset": 0, "limit": 20 }
+  }
+}
+```
+
+Filter by stage, status, or name, and page through with `offset`/`limit` — see
+[Candidates](/api/candidates) for the full filter grammar.
+
+## 4. Dig into one candidate
+
+```bash
+# Full details
+curl https://api.reordinal.com/api/v1/applications/app_123 \
+  -H "X-API-Key: $REORDINAL_API_KEY"
+
+# Parsed resume
+curl https://api.reordinal.com/api/v1/applications/app_123/resume \
+  -H "X-API-Key: $REORDINAL_API_KEY"
+
+# ATS breakdown — matched/missing criteria, strengths, concerns
+curl https://api.reordinal.com/api/v1/applications/app_123/ats \
+  -H "X-API-Key: $REORDINAL_API_KEY"
+```
+
+## 5. Act on them
+
+```bash
+# Move to another stage (stage ids come from GET /api/v1/jobs/:jobId)
+curl -X PATCH https://api.reordinal.com/api/v1/applications/app_123/stage \
+  -H "X-API-Key: $REORDINAL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "stage": "stage_interview" }'
+
+# Tag
+curl -X PATCH https://api.reordinal.com/api/v1/applications/app_123/tags \
+  -H "X-API-Key: $REORDINAL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "add": ["strong-system-design"] }'
+```
+
+<Callout type="info">
+  Reads are free. Rerunning ATS scoring
+  (`POST /api/v1/applications/:id/ats/rerun`) costs **one credit** — see
+  [Actions](/api/actions).
+</Callout>
+
+## Prefer plain English?
+
+Install the Claude Code plugin and skip the curl:
+
+```
+/plugin marketplace add reordinal/claude-reordinal
+/plugin install reordinal@reordinal
+```
+
+See [Claude Code Plugin](/plugin/claude-code).

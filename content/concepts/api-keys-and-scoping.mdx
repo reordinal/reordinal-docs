@@ -1,0 +1,61 @@
+---
+title: API keys & scoping
+description: How Reordinal API keys work — org-scoped rd_live_ keys, team/job claims, and the 404 scoping policy.
+---
+
+import { Callout } from 'nextra/components'
+
+# API keys & scoping
+
+Everything under `/api/v1` authenticates with a workspace **API key** in the
+`X-API-Key` header. There is no OAuth or JWT on this surface.
+
+## Key lifecycle
+
+- **Created** in the dashboard (workspace settings → **API Keys**) or via
+  [`POST /api/orgs/:orgId/api-keys`](/api/authentication) — owners/admins only.
+- The plaintext (`rd_live_…`, 40 chars) is shown **exactly once** at creation.
+  Only a SHA-256 hash is stored; nobody — including Reordinal — can recover the
+  plaintext later.
+- The list view shows a masked form (`rd_live_xxxxxxxx••••••••`), the last-used
+  time, and the optional expiry.
+- **Revoking** a key takes effect immediately — the next request with it gets
+  `401 API_KEY_INVALID`.
+- An optional **`expiresAt`** auto-disables the key after a date
+  (`401 API_KEY_EXPIRED`).
+
+## What a key can do
+
+A key acts with **workspace-owner access** — full read/write on every job and
+candidate in the workspace — unless narrowed by **claims**:
+
+```json
+{ "teams": ["team_abc"], "jobs": ["job_xyz"] }
+```
+
+- Empty/omitted claims → the whole workspace.
+- Otherwise a job is reachable if its ID is in `claims.jobs` **or** its team's
+  ID is in `claims.teams`. Team claims cover future jobs in that team too.
+
+<Callout type="info">
+  Scope keys to what the integration needs. A key for one hiring pipeline
+  should claim that team or job, not the workspace.
+</Callout>
+
+## Out of scope = 404, on purpose
+
+Requests for anything outside the key's workspace or claims return
+**`404 V1_RESOURCE_NOT_FOUND`** — never `403`. A scoped key cannot probe
+whether a job or candidate exists outside its reach; in-scope-but-missing and
+out-of-scope are indistinguishable.
+
+## Rate limits
+
+Each key gets **120 requests per minute** by default. Over the limit, requests
+return `429 V1_RATE_LIMITED` with a `Retry-After` header (seconds). Back off
+and retry.
+
+## Related
+
+- [Authentication endpoints](/api/authentication) — create, list, revoke keys
+- [Errors](/api/errors) — the full error-code table

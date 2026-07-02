@@ -1,0 +1,50 @@
+---
+title: ATS scoring
+description: How Reordinal scores resumes against a job's criteria, and what the score breakdown contains.
+---
+
+import { Callout } from 'nextra/components'
+
+# ATS scoring
+
+Every applicant's resume is parsed and scored against the job's **ATS
+criteria** — the must-haves, nice-to-haves, and weighting defined on the job.
+The result is a 0–100 score plus a breakdown you can read over the API.
+
+## The pipeline
+
+1. A candidate applies; their resume is parsed into structured data (skills,
+   experience, education, projects, summary).
+2. The parsed resume is scored against the job's criteria.
+3. Score and breakdown land on the application, ready to filter and sort by.
+
+Parsing and scoring are asynchronous — a just-submitted application may briefly
+return `{ "resume": null }` or `{ "ats": null }` until the pipeline completes.
+
+## Reading scores
+
+- **Filter and sort** candidate lists by score:
+  `GET /api/v1/jobs/:jobId/applications?sort=ats-desc&atsScoreMin=75` — see
+  [Candidates](/api/candidates).
+- **Read the breakdown** for one candidate:
+  `GET /api/v1/applications/:id/ats` returns the overall score,
+  matched/missing keywords, strengths, concerns, and per-criterion detail.
+
+## Rerunning a score
+
+If the job description or criteria change after candidates applied, their
+scores are stale. Trigger a re-score with
+[`POST /api/v1/applications/:id/ats/rerun`](/api/actions).
+
+<Callout type="warning">
+  A rerun costs **one credit**, charged to the workspace. It requires the
+  resume to be parsed and the job to have a description. If the workspace has
+  no credits, the rerun is skipped and nothing is charged.
+</Callout>
+
+## Judgment stays with you
+
+The score ranks; it doesn't decide. The API deliberately exposes the *inputs*
+too — the parsed resume and the per-criterion breakdown — so a reviewer (or
+[Claude](/plugin/claude-code)) can weigh a strong candidate the keyword match
+undersold.
