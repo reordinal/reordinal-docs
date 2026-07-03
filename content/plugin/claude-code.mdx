@@ -1,6 +1,6 @@
 ---
 title: Claude Code Plugin
-description: Install the reordinal plugin and drive your ATS from Claude Code in plain English — review candidates, move stages, tag, and rerun scoring.
+description: Install the reordinal plugin and drive your ATS from Claude Code in plain English. Review candidates, move stages, tag, and rerun scoring.
 ---
 
 import { Callout } from 'nextra/components'
@@ -8,14 +8,15 @@ import { Callout } from 'nextra/components'
 # Claude Code Plugin
 
 The `reordinal` plugin lets [Claude Code](https://claude.com/claude-code)
-browse and act on your ATS in plain English — no curl, no dashboard
+browse and act on your ATS in plain English. No curl, no dashboard
 tab-switching.
 
-- **Browse jobs** — openings, hiring stages, ATS criteria.
-- **Review candidates** — filter and sort by score, stage, status, or name;
-  open details, parsed resumes, and ATS breakdowns.
-- **Act** — move stages, add/remove tags, rerun ATS scoring.
-- **Reason** — ask for a shortlist, a head-to-head comparison, or interview
+- **Browse jobs**: openings, hiring stages, ATS criteria.
+- **Review candidates**: filter and sort by score, stage, status, or name;
+  open details, parsed resumes, ATS breakdowns, and team comments.
+- **Act**: move stages, add/remove tags, rerun ATS scoring, and save review
+  notes as comments.
+- **Reason**: ask for a shortlist, a head-to-head comparison, or interview
   questions; Claude combines the reads with the job's criteria to answer.
 
 ## Install
@@ -27,12 +28,12 @@ tab-switching.
 
 ## Setup
 
-You need an API key (`rd_live_…`) from your workspace settings → **API Keys** —
-owners/admins only; the key can be
+You need an API key (`rd_live_…`) from your workspace settings → **API Keys**
+(owners/admins only). The key can be
 [scoped to specific teams or jobs](/concepts/api-keys-and-scoping).
 
-Export it **before** launching Claude — a running session won't pick up a later
-`export`:
+Export it **before** launching Claude, since a running session won't pick up a
+later `export`:
 
 ```bash
 export REORDINAL_API_KEY=rd_live_...
@@ -51,17 +52,31 @@ Just ask:
 - *"Open the top candidate's resume and ATS breakdown and summarize their
   strengths against the must-haves."*
 - *"Draft interview questions for this candidate."*
+- *"Save that summary as a comment so the team sees it."*
+- *"What has the team already said about this candidate?"*
 - *"Move Jane Doe to the interview stage and tag her 'strong-system-design'."*
 - *"Rerun ATS scoring on this candidate."*
 
 <Callout type="info">
-  Reads are free. Rerunning ATS scoring costs **one credit** — Claude will ask
-  before spending it.
+  Reads are free. Rerunning ATS scoring costs **one credit**, and Claude will
+  ask before spending it.
 </Callout>
+
+## Comments: the flagship flow
+
+Ask Claude to review a candidate and it reads the parsed resume, the ATS
+breakdown, and the team's earlier comments, then drafts a tight assessment
+against the job's must-haves. On your confirmation it posts the note as a
+comment on the candidate, where every collaborator sees it in the dashboard.
+
+Claude always shows you the exact comment text before posting: comments are
+team-visible and trigger normal notifications. Plugin-written comments carry a
+`claude_plugin` source marker, so they stay distinguishable from human notes.
+See the API details in [Actions](/api/actions#comment-on-a-candidate).
 
 ## Skills
 
-Claude picks the right skill from your request — you don't invoke them by hand:
+Claude picks the right skill from your request; you don't invoke them by hand:
 
 | Skill | What it does |
 | --- | --- |
@@ -75,6 +90,6 @@ Claude Code → reordinal plugin → https://api.reordinal.com/api/v1 (X-API-Key
 ```
 
 The plugin is a thin CLI over the same [REST API](/api/overview) documented
-here — the workspace and the key's team/job scope are resolved server-side from
+here. The workspace and the key's team/job scope are resolved server-side from
 the key, and out-of-scope resources are invisible (`404`), exactly as with
 direct API calls.

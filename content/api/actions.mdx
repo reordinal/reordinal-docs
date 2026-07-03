@@ -24,7 +24,7 @@ curl -X PATCH https://api.reordinal.com/api/v1/applications/app_123/stage \
   -d '{ "stage": "stage_interview" }'
 ```
 
-- **`stage`** (alias **`stageId`**): required — the target stage's public ID,
+- **`stage`** (alias **`stageId`**): required. The target stage's public ID,
   from the job's `stages` (see [Get a job](/api/jobs#get-a-job)).
 
 Returns the updated stage info under `data`.
@@ -42,16 +42,16 @@ PATCH /api/v1/applications/:applicationId/tags
 
 Two body forms:
 
-**Add/remove (merge)** — the convenient form; merges against current tags:
+**Add/remove (merge)**, the convenient form; merges against current tags:
 
 ```json
 { "add": ["strong-system-design"], "remove": ["maybe"], "color": "#6366f1" }
 ```
 
-- `add`: tag names to add — newly created tags get `color` (or a default).
+- `add`: tag names to add; newly created tags get `color` (or a default).
 - `remove`: tag names to remove, case-insensitive.
 
-**Replace** — sets the full tag list; each tag needs a name and hex color:
+**Replace** sets the full tag list; each tag needs a name and hex color:
 
 ```json
 {
@@ -60,7 +60,7 @@ Two body forms:
 }
 ```
 
-- `addToJobTags`: optional — also register these tags at the job level.
+- `addToJobTags`: optional; also register these tags at the job level.
 
 Returns `{ "application": { "id", "jobId", "tags": [...] } }`.
 
@@ -75,8 +75,8 @@ Returns `{ "application": { "id", "jobId", "tags": [...] } }`.
 POST /api/v1/applications/:applicationId/ats/rerun
 ```
 
-Re-scores the candidate against the job's current description and criteria —
-use it after the job changed.
+Re-scores the candidate against the job's current description and criteria.
+Use it after the job changed.
 
 <Callout type="warning">
   Costs **one credit**, charged to the workspace. Requires the resume to be
@@ -93,6 +93,39 @@ use it after the job changed.
 | 400 | `V1_INVALID_REQUEST` | Resume not parsed yet, job has no description, or a pipeline is already running |
 | 404 | `V1_RESOURCE_NOT_FOUND` | Out of scope / not found |
 
-Scoring is asynchronous — poll
+Scoring is asynchronous; poll
 [`GET /api/v1/applications/:id/ats`](/api/candidates#ats-breakdown) for the new
 result.
+
+## Comment on a candidate
+
+```
+POST /api/v1/applications/:applicationId/comments
+```
+
+Adds a note to the candidate's comment thread, visible to every collaborator
+on the job in the dashboard. This is the plugin's flagship write: Claude's
+assessment becomes a durable, team-visible note.
+
+```bash
+curl -X POST https://api.reordinal.com/api/v1/applications/app_123/comments \
+  -H "X-API-Key: $REORDINAL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "text": "Strong on distributed systems; thin on ownership.\nProbe incident response in the interview." }'
+```
+
+- **`text`**: required, plain text, 1 to 10,000 characters. Newlines become
+  paragraphs, so the note renders naturally next to human comments.
+
+Returns `201` with the created comment under `data.comment`. The comment is
+attributed to the key's workspace owner and stored with
+`source: "claude_plugin"` so it stays distinguishable from human notes.
+Collaborators receive their normal comment notifications.
+
+To read the thread first, see
+[list comments](/api/candidates#team-comments).
+
+| Status | Code | When |
+| --- | --- | --- |
+| 400 | `V1_INVALID_REQUEST` | `text` missing, empty, or over 10,000 characters |
+| 404 | `V1_RESOURCE_NOT_FOUND` | Out of scope / not found |

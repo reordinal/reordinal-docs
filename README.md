@@ -36,5 +36,5 @@ One-time GitHub Pages setup:
 ## Keeping docs in sync
 
 The API reference mirrors `reordinal-api/docs/api/v1/` and
-`reordinal-api/docs/api/api-keys/` — when an endpoint changes there, update the
+`reordinal-api/docs/api/api-keys/`. When an endpoint changes there, update the
 corresponding page under `content/api/` here.

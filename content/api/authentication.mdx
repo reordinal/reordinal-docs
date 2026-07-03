@@ -12,7 +12,7 @@ page covers managing the keys themselves.
 
 The easiest way is the dashboard: workspace settings → **API Keys**. The same
 operations exist as JWT-authenticated endpoints under
-`/api/orgs/:orgId/api-keys` — all restricted to workspace **owners and
+`/api/orgs/:orgId/api-keys`, all restricted to workspace **owners and
 admins**.
 
 ## Create a key
@@ -59,7 +59,7 @@ Response (`201`):
 
 <Callout type="warning">
   `apiKey` is the plaintext and is returned **only here**. Only its SHA-256
-  hash is stored — it cannot be retrieved again. Store it securely.
+  hash is stored, so it cannot be retrieved again. Store it securely.
 </Callout>
 
 ## List keys
@@ -68,7 +68,7 @@ Response (`201`):
 GET /api/orgs/:orgId/api-keys
 ```
 
-Returns the workspace's keys, newest first, always masked — `data.keys` is an
+Returns the workspace's keys, newest first, always masked. `data.keys` is an
 array of the `key` shape above (plus `lastUsedAt` once used). Revoked keys are
 excluded.
 
@@ -92,5 +92,5 @@ curl https://api.reordinal.com/api/v1/jobs \
 - Unknown/revoked key → `401 API_KEY_INVALID`
 - Past its `expiresAt` → `401 API_KEY_EXPIRED`
 
-How claims narrow a key — and why out-of-scope reads are `404`s — is covered in
+How claims narrow a key, and why out-of-scope reads are `404`s, is covered in
 [API keys & scoping](/concepts/api-keys-and-scoping).

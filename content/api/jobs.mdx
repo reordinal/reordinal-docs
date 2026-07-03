@@ -52,7 +52,8 @@ Scoped keys only see jobs inside their claims.
 
 <Callout type="info">
   For team/job-scoped keys, claim filtering is applied to the first 100 org
-  jobs before pagination — fine for keys scoped to a handful of teams/jobs.
+  jobs before pagination, which is fine for keys scoped to a handful of
+  teams/jobs.
 </Callout>
 
 ## Get a job
@@ -61,7 +62,7 @@ Scoped keys only see jobs inside their claims.
 GET /api/v1/jobs/:jobId
 ```
 
-Returns the full job object directly under `data` — title, status, description,
+Returns the full job object directly under `data`: title, status, description,
 form fields, **`stages`** (each with a `stage_…` public ID), and **`criteria`**
 (the ATS must-haves/nice-to-haves and weighting).
 

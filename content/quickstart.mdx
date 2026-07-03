@@ -23,11 +23,11 @@ Every endpoint lives under `/api/v1` and is authenticated with a workspace
 
 1. Sign in at [reordinal.com](https://reordinal.com).
 2. Open your workspace's settings and go to **API Keys**.
-3. Create a key. It looks like `rd_live_…` and is shown **only once** — copy it
-   somewhere safe.
+3. Create a key. It looks like `rd_live_…` and is shown **only once**, so copy
+   it somewhere safe.
 
 Only workspace owners and admins can create keys. A key can cover the whole
-workspace or be scoped to specific teams/jobs — see
+workspace or be scoped to specific teams/jobs; see
 [Authentication](/api/authentication).
 
 ```bash
@@ -41,8 +41,8 @@ curl https://api.reordinal.com/api/v1/jobs \
   -H "X-API-Key: $REORDINAL_API_KEY"
 ```
 
-Every response uses the same envelope — `status` is `success` with `data`, or
-`fail` with `error`:
+Every response uses the same envelope: `status` is `success` with `data`, or
+`fail` with `error`.
 
 ```json
 {
@@ -64,7 +64,7 @@ Every response uses the same envelope — `status` is `success` with `data`, or
 }
 ```
 
-Grab a job's `id` — everything else hangs off it.
+Grab a job's `id`. Everything else hangs off it.
 
 ## 3. List candidates, best first
 
@@ -85,7 +85,7 @@ curl "https://api.reordinal.com/api/v1/jobs/job_xyz/applications?sort=ats-desc&a
 }
 ```
 
-Filter by stage, status, or name, and page through with `offset`/`limit` — see
+Filter by stage, status, or name, and page through with `offset`/`limit`. See
 [Candidates](/api/candidates) for the full filter grammar.
 
 ## 4. Dig into one candidate
@@ -99,7 +99,7 @@ curl https://api.reordinal.com/api/v1/applications/app_123 \
 curl https://api.reordinal.com/api/v1/applications/app_123/resume \
   -H "X-API-Key: $REORDINAL_API_KEY"
 
-# ATS breakdown — matched/missing criteria, strengths, concerns
+# ATS breakdown: matched/missing criteria, strengths, concerns
 curl https://api.reordinal.com/api/v1/applications/app_123/ats \
   -H "X-API-Key: $REORDINAL_API_KEY"
 ```
@@ -122,7 +122,7 @@ curl -X PATCH https://api.reordinal.com/api/v1/applications/app_123/tags \
 
 <Callout type="info">
   Reads are free. Rerunning ATS scoring
-  (`POST /api/v1/applications/:id/ats/rerun`) costs **one credit** — see
+  (`POST /api/v1/applications/:id/ats/rerun`) costs **one credit**. See
   [Actions](/api/actions).
 </Callout>
 

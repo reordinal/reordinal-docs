@@ -1,8 +1,11 @@
 import type { Metadata } from 'next'
+import { Space_Grotesk } from 'next/font/google'
 import { Footer, Layout, Navbar } from 'nextra-theme-docs'
 import { Head } from 'nextra/components'
 import { getPageMap } from 'nextra/page-map'
 import 'nextra-theme-docs/style.css'
+
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], weight: '700' })
 
 export const metadata: Metadata = {
   title: {
@@ -10,17 +13,23 @@ export const metadata: Metadata = {
     template: '%s – Reordinal Docs',
   },
   description:
-    'Drive your Reordinal ATS programmatically — browse jobs, filter and act on candidates via the REST API, or let Claude do it with the claude-reordinal plugin.',
+    'Drive your Reordinal ATS programmatically: browse jobs, filter and act on candidates via the REST API, or let Claude do it with the claude-reordinal plugin.',
   metadataBase: new URL('https://docs.reordinal.com'),
   icons: { icon: '/icon.svg' },
 }
 
+// Wordmark mirrors the reordinal-react-app lander header
+// (components/lander/nav/Header.tsx): lowercase, Space Grotesk bold,
+// single foreground color next to the logo mark.
 const logo = (
-  <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+  <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
     {/* eslint-disable-next-line @next/next/no-img-element */}
-    <img src="/icon.svg" alt="" width={26} height={26} />
-    <span style={{ fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em' }}>
-      Re<span style={{ color: '#D16A18' }}>ordinal</span>
+    <img src="/icon.svg" alt="" width={28} height={28} />
+    <span
+      className={spaceGrotesk.className}
+      style={{ fontWeight: 700, fontSize: 24, lineHeight: 1 }}
+    >
+      reordinal
     </span>
   </span>
 )

@@ -21,13 +21,13 @@ curl https://api.reordinal.com/api/v1/jobs \
   -H "X-API-Key: $REORDINAL_API_KEY"
 ```
 
-Keys are minted by workspace owners/admins — see
+Keys are minted by workspace owners/admins. See
 [Authentication](/api/authentication) and
 [API keys & scoping](/concepts/api-keys-and-scoping).
 
 ## Response envelope
 
-Every response — success or failure — uses the same envelope:
+Every response, success or failure, uses the same envelope:
 
 ```json
 { "status": "success", "data": { /* result */ } }
@@ -37,13 +37,13 @@ Every response — success or failure — uses the same envelope:
 { "status": "fail", "error": { "code": "V1_RESOURCE_NOT_FOUND", "message": "Resource not found" } }
 ```
 
-Branch on `status`; `error.code` is stable and machine-matchable — the full
+Branch on `status`; `error.code` is stable and machine-matchable. The full
 table is in [Errors](/api/errors).
 
 ## Scoping
 
 A key sees only its workspace, optionally narrowed to claimed teams/jobs.
-Anything outside that scope returns `404 V1_RESOURCE_NOT_FOUND` — never `403` —
+Anything outside that scope returns `404 V1_RESOURCE_NOT_FOUND` (never `403`),
 so keys can't probe for resources they can't reach.
 
 ## Rate limits
@@ -53,7 +53,7 @@ so keys can't probe for resources they can't reach.
 
 <Callout type="info">
   Reads are free. The only metered call is
-  [`POST /api/v1/applications/:id/ats/rerun`](/api/actions) — one credit per
+  [`POST /api/v1/applications/:id/ats/rerun`](/api/actions), at one credit per
   rerun.
 </Callout>
 
@@ -70,12 +70,17 @@ so keys can't probe for resources they can't reach.
 | PATCH | `/api/v1/applications/:applicationId/stage` | [Actions](/api/actions) |
 | PATCH | `/api/v1/applications/:applicationId/tags` | [Actions](/api/actions) |
 | POST | `/api/v1/applications/:applicationId/ats/rerun` | [Actions](/api/actions) |
+| GET | `/api/v1/applications/:applicationId/comments` | [Candidates](/api/candidates) |
+| POST | `/api/v1/applications/:applicationId/comments` | [Actions](/api/actions) |
 
 Key management (`/api/orgs/:orgId/api-keys`) is JWT-authenticated and covered
 in [Authentication](/api/authentication).
 
 ## Surface scope
 
-v1 is deliberately read-heavy with exactly three writes: stage moves, tags, and
-ATS reruns. Destructive and lifecycle operations (archiving candidates, editing
-contact details, reviewer scores, pipeline control) are dashboard-only.
+v1 is deliberately read-heavy with exactly four writes: stage moves, tags, ATS
+reruns, and comments. Comments are the plugin's flagship write; they are
+attributed to the key's workspace owner and marked with
+`source: "claude_plugin"`. Destructive and lifecycle operations (archiving
+candidates, editing contact details, reviewer scores, pipeline control) are
+dashboard-only.

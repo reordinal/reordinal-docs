@@ -1,11 +1,11 @@
 ---
 title: Introduction
-description: Reordinal is an ATS you can drive programmatically — browse jobs and act on candidates via a REST API, or let Claude do it from your terminal.
+description: Reordinal is an ATS you can drive programmatically. Import LinkedIn applicants with the Chrome extension, browse jobs and act on candidates via a REST API, or let Claude do it from your terminal.
 ---
 
 # Reordinal
 
-**Reordinal is an applicant tracking system built for speed — and it doesn't
+**Reordinal is an applicant tracking system built for speed, and it doesn't
 stop at the dashboard.**
 
 Post jobs, collect applications, and let ATS scoring rank every resume against
@@ -16,7 +16,7 @@ from your own scripts via the REST API, or in plain English through Claude Code.
 
 1. A **workspace** (organization) holds **teams**, and teams hold **jobs**.
 2. A job has an ordered set of **hiring stages** (screening, interview, offer, …)
-   and **ATS criteria** — the must-haves and nice-to-haves applicants are scored
+   and **ATS criteria**: the must-haves and nice-to-haves applicants are scored
    against.
 3. Every submitted application becomes a **candidate** on the job: parsed
    resume, contact fields, an **ATS score** with a full breakdown, tags, and a
@@ -24,13 +24,32 @@ from your own scripts via the REST API, or in plain English through Claude Code.
 
 See the [data model](/concepts/data-model) for the full picture.
 
+## Getting candidates in: the LinkedIn extension
+
+Most lean teams get the bulk of their applicants from LinkedIn Easy Apply, so
+Reordinal ships a **Chrome extension** that imports those applicants straight
+into your pipeline:
+
+- **One-click import** from LinkedIn jobs you control. Select candidates and
+  bring them over, resumes included. No password sharing, no copy-pasting into
+  spreadsheets.
+- Imported candidates land on the job like any other application: the resume is
+  parsed, **ATS scoring** runs against the job's criteria, and they show up in
+  the same ranked list.
+- The extension authenticates with your existing Reordinal session and syncs
+  with your workspace in real time.
+
+Grab it from your [Reordinal dashboard](https://reordinal.com). Once applicants
+are in, everything below (the API, the Claude Code plugin) works on them the
+same way.
+
 ## Two ways to integrate
 
-- **REST API** — the `/api/v1` surface, authenticated with a workspace
+- **REST API**: the `/api/v1` surface, authenticated with a workspace
   **API key**. List jobs, filter and sort candidates, read resumes and ATS
   breakdowns, move stages, tag, and rerun scoring. See the
   [API Reference](/api/overview).
-- **Claude Code** — install the `reordinal` plugin and ask in plain English:
+- **Claude Code**: install the `reordinal` plugin and ask in plain English:
   *"list candidates in screening with an ATS score above 75, best first."* See
   [Claude Code Plugin](/plugin/claude-code).
 
@@ -41,6 +60,8 @@ Both talk to the same backend with the same key, and both respect the key's
 
 - New here? Make your first API call in a few minutes with the
   [Quickstart](/quickstart).
+- Drowning in LinkedIn applicants? Install the Chrome extension from your
+  [dashboard](https://reordinal.com) and import them in one click.
 - Building an integration? Read [Concepts](/concepts/data-model), then jump to
   the [API Reference](/api/overview).
 - Working from a terminal? Install the

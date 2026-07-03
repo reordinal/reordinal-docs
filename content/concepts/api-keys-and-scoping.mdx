@@ -1,6 +1,6 @@
 ---
 title: API keys & scoping
-description: How Reordinal API keys work — org-scoped rd_live_ keys, team/job claims, and the 404 scoping policy.
+description: "How Reordinal API keys work: org-scoped rd_live_ keys, team/job claims, and the 404 scoping policy."
 ---
 
 import { Callout } from 'nextra/components'
@@ -13,21 +13,21 @@ Everything under `/api/v1` authenticates with a workspace **API key** in the
 ## Key lifecycle
 
 - **Created** in the dashboard (workspace settings → **API Keys**) or via
-  [`POST /api/orgs/:orgId/api-keys`](/api/authentication) — owners/admins only.
+  [`POST /api/orgs/:orgId/api-keys`](/api/authentication), owners/admins only.
 - The plaintext (`rd_live_…`, 40 chars) is shown **exactly once** at creation.
-  Only a SHA-256 hash is stored; nobody — including Reordinal — can recover the
+  Only a SHA-256 hash is stored; nobody, including Reordinal, can recover the
   plaintext later.
 - The list view shows a masked form (`rd_live_xxxxxxxx••••••••`), the last-used
   time, and the optional expiry.
-- **Revoking** a key takes effect immediately — the next request with it gets
+- **Revoking** a key takes effect immediately; the next request with it gets
   `401 API_KEY_INVALID`.
 - An optional **`expiresAt`** auto-disables the key after a date
   (`401 API_KEY_EXPIRED`).
 
 ## What a key can do
 
-A key acts with **workspace-owner access** — full read/write on every job and
-candidate in the workspace — unless narrowed by **claims**:
+A key acts with **workspace-owner access** (full read/write on every job and
+candidate in the workspace) unless narrowed by **claims**:
 
 ```json
 { "teams": ["team_abc"], "jobs": ["job_xyz"] }
@@ -45,7 +45,7 @@ candidate in the workspace — unless narrowed by **claims**:
 ## Out of scope = 404, on purpose
 
 Requests for anything outside the key's workspace or claims return
-**`404 V1_RESOURCE_NOT_FOUND`** — never `403`. A scoped key cannot probe
+**`404 V1_RESOURCE_NOT_FOUND`**, never `403`. A scoped key cannot probe
 whether a job or candidate exists outside its reach; in-scope-but-missing and
 out-of-scope are indistinguishable.
 
@@ -57,5 +57,5 @@ and retry.
 
 ## Related
 
-- [Authentication endpoints](/api/authentication) — create, list, revoke keys
-- [Errors](/api/errors) — the full error-code table
+- [Authentication endpoints](/api/authentication): create, list, revoke keys
+- [Errors](/api/errors): the full error-code table

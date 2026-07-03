@@ -8,7 +8,7 @@ import { Callout } from 'nextra/components'
 # Candidates
 
 A candidate (application) belongs to a job. All four reads here require the
-job to be inside the key's workspace and claims — anything else is a
+job to be inside the key's workspace and claims; anything else is a
 `404 V1_RESOURCE_NOT_FOUND`.
 
 ## List candidates
@@ -24,7 +24,7 @@ GET /api/v1/jobs/:jobId/applications
 | `stageIds` | string | Stage public IDs, comma-separated |
 | `atsScoreMin` / `atsScoreMax` | number | Score bounds, 0–100 |
 | `search` | string | Free-text candidate name/email search |
-| `offset` / `limit` | number | Pagination — default `0` / `20`, max `100` |
+| `offset` / `limit` | number | Pagination. Default `0` / `20`, max `100` |
 
 ```bash
 curl "https://api.reordinal.com/api/v1/jobs/job_xyz/applications?sort=ats-desc&stageIds=stage_screening&atsScoreMin=75" \
@@ -54,7 +54,7 @@ pipeline and not yet listed with final data.
 GET /api/v1/applications/:applicationId
 ```
 
-Returns the full candidate under `data.application` — contact fields (both
+Returns the full candidate under `data.application`: contact fields (both
 user-provided and resume-extracted), tags, current stage, ATS and reviewer
 scores, form/screening answers, and pipeline status.
 
@@ -85,9 +85,35 @@ Returns `{ "ats": null }` while scoring hasn't run. Read the job's `criteria`
 per-criterion detail.
 
 <Callout type="info">
-  Stale score after the job changed? Trigger a re-score — see
+  Stale score after the job changed? Trigger a re-score. See
   [Actions](/api/actions#rerun-ats-scoring).
 </Callout>
+
+## Team comments
+
+```
+GET /api/v1/applications/:applicationId/comments
+```
+
+The team's notes on the candidate, oldest first within the page. With no
+`offset`, returns the latest page. Pass `offset`/`limit` (default 20, max 100)
+to page.
+
+```json
+{
+  "status": "success",
+  "data": {
+    "comments": [
+      { "id": "cmt_abc", "plainText": "…", "source": null, "createdAt": "…", "createdBy": { "id": "usr_1", "name": "…" } }
+    ],
+    "pagination": { "total": 7, "offset": 0, "limit": 20 }
+  }
+}
+```
+
+`source` is `null` for human comments and `"claude_plugin"` for comments
+created through this API. To add one, see
+[Actions](/api/actions#comment-on-a-candidate).
 
 ## Errors
 

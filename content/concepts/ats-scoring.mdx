@@ -8,7 +8,7 @@ import { Callout } from 'nextra/components'
 # ATS scoring
 
 Every applicant's resume is parsed and scored against the job's **ATS
-criteria** — the must-haves, nice-to-haves, and weighting defined on the job.
+criteria**: the must-haves, nice-to-haves, and weighting defined on the job.
 The result is a 0–100 score plus a breakdown you can read over the API.
 
 ## The pipeline
@@ -18,13 +18,14 @@ The result is a 0–100 score plus a breakdown you can read over the API.
 2. The parsed resume is scored against the job's criteria.
 3. Score and breakdown land on the application, ready to filter and sort by.
 
-Parsing and scoring are asynchronous — a just-submitted application may briefly
-return `{ "resume": null }` or `{ "ats": null }` until the pipeline completes.
+Parsing and scoring are asynchronous, so a just-submitted application may
+briefly return `{ "resume": null }` or `{ "ats": null }` until the pipeline
+completes.
 
 ## Reading scores
 
 - **Filter and sort** candidate lists by score:
-  `GET /api/v1/jobs/:jobId/applications?sort=ats-desc&atsScoreMin=75` — see
+  `GET /api/v1/jobs/:jobId/applications?sort=ats-desc&atsScoreMin=75`. See
   [Candidates](/api/candidates).
 - **Read the breakdown** for one candidate:
   `GET /api/v1/applications/:id/ats` returns the overall score,
@@ -45,6 +46,6 @@ scores are stale. Trigger a re-score with
 ## Judgment stays with you
 
 The score ranks; it doesn't decide. The API deliberately exposes the *inputs*
-too — the parsed resume and the per-criterion breakdown — so a reviewer (or
+too (the parsed resume and the per-criterion breakdown) so a reviewer (or
 [Claude](/plugin/claude-code)) can weigh a strong candidate the keyword match
 undersold.

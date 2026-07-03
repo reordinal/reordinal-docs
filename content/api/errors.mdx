@@ -14,14 +14,14 @@ Failures always use the standard envelope with an HTTP error status:
 }
 ```
 
-`error.code` is stable — match on it, not on `message`.
+`error.code` is stable. Match on it, not on `message`.
 
 ## v1 surface
 
 | Status | Code | Meaning |
 | --- | --- | --- |
-| 400 | `V1_INVALID_REQUEST` | A parameter or body field is missing/invalid — the `message` names it |
-| 404 | `V1_RESOURCE_NOT_FOUND` | The job/application doesn't exist **or is outside the key's scope** (deliberately indistinguishable — see [scoping](/concepts/api-keys-and-scoping)) |
+| 400 | `V1_INVALID_REQUEST` | A parameter or body field is missing/invalid; the `message` names it |
+| 404 | `V1_RESOURCE_NOT_FOUND` | The job/application doesn't exist **or is outside the key's scope** (deliberately indistinguishable; see [scoping](/concepts/api-keys-and-scoping)) |
 | 429 | `V1_RATE_LIMITED` | Over the per-key limit (default 120/min). Wait `Retry-After` seconds |
 
 ## Authentication
@@ -40,11 +40,11 @@ Failures always use the standard envelope with an HTTP error status:
 | 400 | `API_KEY_INVALID_CLAIMS` | `claims.teams`/`claims.jobs` not arrays of ID strings |
 | 400 | `API_KEY_INVALID_EXPIRY` | `expiresAt` not a future ISO-8601 date |
 | 404 | `API_KEY_NOT_FOUND` | No such key in this workspace (or already revoked) |
-| 401/403 | — | Caller is not signed in / not an owner or admin |
+| 401/403 | (none) | Caller is not signed in / not an owner or admin |
 
 ## Handling advice
 
-- Treat `404` on a known-good ID as a scoping problem first — check the key's
+- Treat `404` on a known-good ID as a scoping problem first: check the key's
   claims before assuming the resource is gone.
 - On `429`, honor `Retry-After`; the window is short (one minute).
 - `4xx` other than `429` will not succeed on retry without changing the
