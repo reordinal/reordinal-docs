@@ -38,9 +38,14 @@ scores are stale. Trigger a re-score with
 [`POST /api/v1/applications/:id/ats/rerun`](/api/actions).
 
 <Callout type="warning">
-  A rerun costs **one credit**, charged to the workspace. It requires the
-  resume to be parsed and the job to have a description. If the workspace has
-  no credits, the rerun is skipped and nothing is charged.
+  Fit scoring runs on **paid jobs only**. A free job collects and tracks
+  applications but never scores them, so a rerun on one returns
+  `JOB_TIER_REQUIRED`.
+
+  On a paid job a rerun costs **one fit score**, charged to that job's own
+  envelope rather than a shared workspace pool. It requires the resume to be
+  parsed and the job to have a description. If the job has no fit scores left,
+  the rerun is skipped and nothing is charged.
 </Callout>
 
 ## Judgment stays with you

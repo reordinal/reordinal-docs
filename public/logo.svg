@@ -1,27 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <defs>
-    <linearGradient id="brand_gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#E47E25" />
-      <stop offset="100%" stop-color="#D16A18" />
-    </linearGradient>
-  </defs>
-
-  <!-- Abstract Person / Node -->
-  <circle cx="10" cy="10" r="5" fill="url(#brand_gradient)" />
-
-  <!-- Flow / Arrow -->
-  <path
-    d="M 6 26 C 6 26, 8 18, 16 18 C 24 18, 24 10, 28 6"
-    stroke="url(#brand_gradient)"
-    stroke-width="3"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  />
-  <path
-    d="M 23 6 L 28 6 L 28 11"
-    stroke="url(#brand_gradient)"
-    stroke-width="3"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none">
+  <rect x="3" y="3" width="26" height="6.5" rx="3.25" fill="#C8501A"/>
+  <rect x="3" y="12.75" width="17.333" height="6.5" rx="3.25" fill="#888888"/>
+  <rect x="3" y="22.5" width="11.556" height="6.5" rx="3.25" fill="#888888"/>
 </svg>

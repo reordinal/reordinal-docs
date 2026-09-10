@@ -122,7 +122,8 @@ curl -X PATCH https://api.reordinal.com/api/v1/applications/app_123/tags \
 
 <Callout type="info">
   Reads are free. Rerunning ATS scoring
-  (`POST /api/v1/applications/:id/ats/rerun`) costs **one credit**. See
+  (`POST /api/v1/applications/:id/ats/rerun`) runs on paid jobs only and costs
+  **one fit score** from that job's own envelope. See
   [Actions](/api/actions).
 </Callout>
 

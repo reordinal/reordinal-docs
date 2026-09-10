@@ -61,7 +61,7 @@ export default async function RootLayout({
   return (
     <html lang="en" dir="ltr" suppressHydrationWarning>
       <Head>
-        <meta name="theme-color" content="#D16A18" />
+        <meta name="theme-color" content="#C8501A" />
       </Head>
       <body>
         <Layout
